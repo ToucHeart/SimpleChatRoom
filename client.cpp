@@ -18,7 +18,7 @@ short PORT = 10222;           // 服务器服务端口
 typedef struct sockaddr SA;
 char name[30];
 
-size_t terminal_width()
+size_t terminal_width() // 得到屏幕宽度
 {
     struct winsize size;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
@@ -28,11 +28,11 @@ size_t terminal_width()
 void upRightPrint(bool up)
 {
     if (up)
-        cout << UPONELINE;
-    cout << setiosflags(ios::right) << setw(terminal_width());
+        cout << UPONELINE;                                     // 将光标向上移动一行
+    cout << setiosflags(ios::right) << setw(terminal_width()); // 靠屏幕右侧1/3处输出
 }
 
-void initClient()
+void initClient() // 初始化客户端
 {
     serverfd = socket(PF_INET, SOCK_STREAM, 0);
     struct sockaddr_in addr;
@@ -47,19 +47,19 @@ void initClient()
     char temp[32] = {0};
     if (recv(serverfd, temp, sizeof(temp), 0))
     {
-        if (!strcmp(temp, "对不起，聊天室已满!"))
+        if (!strcmp(temp, "客户端启动成功"))
         {
-            cout << RED << temp << NORMAL << endl;
-            exit(1);
+            printStrs(1, 3, GREEN, temp, NORMAL);
         }
         else
         {
-            cout << GREEN << temp << NORMAL << endl;
+            printStrs(1, 3, RED, temp, NORMAL);
+            exit(1);
         }
     }
 }
 
-void *recv_thread(void *p)
+void *recv_thread(void *p) // 客户端接收线程
 {
     while (1)
     {
@@ -72,20 +72,18 @@ void *recv_thread(void *p)
         if (pos != string::npos)
         {
             buf[pos] = '\0';
-            cout << GREEN << buf << ":" << NORMAL << endl;
-            cout << RED << buf + pos + 1 << NORMAL << endl
-                 << endl;
+            printStrs(1, 4, GREEN, buf, ":", NORMAL);
+            printStrs(2, 3, RED, buf + pos + 1, NORMAL);
         }
     }
 }
 
-void printSelfMsg(char *buf)
+void printSelfMsg(char *buf) // 打印自己的消息,先将光标向上移动一行,然后靠右侧输出
 {
     upRightPrint(true);
-    cout << GREEN << name << ":" << NORMAL << endl;
+    printStrs(1, 4, GREEN, name, ":", NORMAL);
     upRightPrint(false);
-    cout << RED << buf << NORMAL << endl
-         << endl;
+    printStrs(2, 3, RED, buf, NORMAL);
 }
 
 void start()
@@ -117,9 +115,9 @@ void start()
     close(serverfd);
 }
 
-void getUserName()
+void getUserName() // 获取用户名,并判断是否重复
 {
-    cout << "请输入您的名字：";
+    printStrs(0, 1, "请输入您的名字：");
     while (1)
     {
         scanf("%s", name);
@@ -128,11 +126,13 @@ void getUserName()
         read(serverfd, &buf, 1);
         if (buf == 0)
         {
-            cout << RED "用户名已存在,请重新输入: " NORMAL;
+            printStrs(0, 3, RED, "用户名已存在,请重新输入: ", NORMAL);
         }
         else
         {
-            cout << GREEN << "欢迎您! " << RED << name << NORMAL << endl;
+            printStrs(1, 7, GREEN, "欢迎您! ", RED, name, GREEN, " 正在进入聊天室...", NORMAL);
+            sleep(2);
+            system("clear");
             break;
         }
     }

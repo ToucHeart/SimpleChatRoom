@@ -2,4 +2,4 @@
 #define GREEN "\033[32m"
 #define NORMAL "\033[0m"
 #define UPONELINE "\033[1A"
-
+void printStrs(int newLineNum, int argc, ...);

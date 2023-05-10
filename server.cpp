@@ -20,7 +20,7 @@ const short PORT = 10222;
 map<string, int> names_fd; // username,fd
 typedef struct sockaddr SA;
 
-void initServer()
+void initServer() // 初始化服务器端
 {
     serverFd = socket(PF_INET, SOCK_STREAM, 0);
     if (serverFd == -1)
@@ -44,19 +44,19 @@ void initServer()
     }
 }
 
-void sendMsgToOthers(char *msg, int clientfd)
+void sendMsgToOthers(char *msg, int clientfd) // 向除了发送端以外的其他人发送
 {
     for (auto itr = names_fd.begin(); itr != names_fd.end(); ++itr)
     {
         if (clientfd != (*itr).second)
         {
-            cout << "send to user: " << GREEN << (*itr).first << NORMAL << endl;
+            printStrs(1, 4, "send to user: ", GREEN, (*itr).first.c_str(), NORMAL);
             send((*itr).second, msg, strlen(msg), 0);
         }
     }
 }
 
-bool checkNameExist(int clientfd)
+bool checkNameExist(int clientfd) // 判断名字是否重复,重复发送0,不重复发送1
 {
     char namebuf[30] = {};
     recv(clientfd, namebuf, sizeof(namebuf), 0);
@@ -69,14 +69,14 @@ bool checkNameExist(int clientfd)
     }
     else
     {
-        names_fd[requestName] = clientfd;
+        names_fd[requestName] = clientfd; // 添加到names_fd中
         rep = 1;
         send(clientfd, &rep, 1, 0);
     }
     return true;
 }
 
-void deleteUser(int fd)
+void deleteUser(int fd) // 删除某个用户
 {
     for (auto it = names_fd.begin(); it != names_fd.end(); it++)
     {
@@ -126,7 +126,6 @@ void startService()
         }
         if (names_fd.size() >= MAX_SIZE)
         {
-            // 发送给客户端说聊天室满了
             const char *str = "对不起，聊天室已满!";
             send(clientfd, str, strlen(str), 0);
             close(clientfd);

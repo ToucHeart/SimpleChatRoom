@@ -29,7 +29,7 @@ void initServer() // 初始化服务器端
         exit(-1);
     }
     struct sockaddr_in addr;
-    addr.sin_family = PF_INET;
+    addr.sin_family = AF_INET;
     addr.sin_port = htons(PORT);
     addr.sin_addr.s_addr = inet_addr(IP);
     if (bind(serverFd, (SA *)&addr, sizeof(addr)) == -1)

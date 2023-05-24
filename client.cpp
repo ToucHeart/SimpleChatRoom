@@ -36,7 +36,7 @@ void initClient() // 初始化客户端
 {
     serverfd = socket(PF_INET, SOCK_STREAM, 0);
     struct sockaddr_in addr;
-    addr.sin_family = PF_INET;
+    addr.sin_family = AF_INET;
     addr.sin_port = htons(PORT);
     addr.sin_addr.s_addr = inet_addr(IP);
     if (connect(serverfd, (SA *)&addr, sizeof(addr)) == -1)

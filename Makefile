@@ -1,12 +1,7 @@
-src = $(wildcard ./*.cpp)
-obj = $(patsubst %.cpp, %.o, $(src))
-CC = g++
 all:
-        $(CC) client.o -o client -lpthread
-        $(CC) server.o -o server -lpthread
-%.o: %.cpp
-        $(CC) -c $< -o $@
+	g++ client.cpp helper.cpp -o client -lpthread
+	g++ server.cpp helper.cpp -o server -lpthread
     
 .PHONY: clean
 clean:
-        rm -rf $(obj) client server
+	rm -rf client server

@@ -1,6 +1,14 @@
-all:
-	g++ server.cpp helper.cpp -o server -lpthread
-	g++ client.cpp helper.cpp -o client -lpthread
-.PYONY: clean
+src = $(wildcard ./*.cpp)
+obj = $(patsubst %.cpp, %.o, $(src))
+target = app
+CC = g++
+
+$(target): $(obj)
+        $(CC) $(obj) -o $(target) -lpthread
+    
+%.o: %.cpp
+        $(CC) -c $< -o $@
+    
+.PHONY: clean
 clean:
-	rm -rf server client
+        rm -rf $(obj) $(target)
